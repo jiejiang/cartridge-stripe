@@ -8,6 +8,7 @@ from django.conf import settings
 logger = logging.getLogger(__name__)
 
 CURRENCY = getattr(settings, 'SHOP_CHARGE_CURRENCY', 'usd')
+API_KEY = getattr(settings, 'STRIPE_SECRET', None)
 
 
 class CheckoutError(Exception):
@@ -34,7 +35,8 @@ def payment_handler(request, order_form, order):
         charge = stripe.Charge.create(amount=int(total *100),
                                       currency=CURRENCY,
                                       card=tok,
-                                      description=order)
+                                      description=order,
+                                      api_key=API_KEY)
         return charge.id
 
     except stripe.CardError as e:
